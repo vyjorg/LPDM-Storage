@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -51,27 +52,30 @@ public class FileUploadController {
 
             for(MultipartFile multipartFile : files){
 
-                String fileName = multipartFile.getOriginalFilename();
-                fileNames.add(fileName);
+                if(multipartFile != null){
 
-                log.info("File : " + fileName);
-                log.info("Size :" + multipartFile.getSize());
-                log.info("ContentType :" + multipartFile.getContentType());
+                    String fileName = multipartFile.getOriginalFilename();
+                    fileNames.add(fileName);
 
-                // Handle file content - multipartFile.getInputStream();
+                    log.info("File : " + fileName);
+                    log.info("Size :" + multipartFile.getSize());
+                    log.info("ContentType :" + multipartFile.getContentType());
 
-                File file = new File(FILE_PATH + fileName);
+                    try {
+                        BufferedOutputStream bos = new BufferedOutputStream(
+                                new FileOutputStream(
+                                        new File(FILE_PATH + fileName)
+                                )
+                        );
 
-                try {
-                    file.createNewFile();
-                    FileOutputStream fileOutputStream = new FileOutputStream(file);
-                    fileOutputStream.write(multipartFile.getBytes());
-                    fileOutputStream.close();
+                        bos.write(multipartFile.getBytes());
+                        bos.flush();
+                        bos.close();
 
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
-
             }
 
             String response = null;

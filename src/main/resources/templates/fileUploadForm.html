@@ -19,9 +19,13 @@
     <script>
         $(document).ready(function() {
 
+            // Constraint
             var maxFiles = 3;
             var currentFiles = 1;
 
+            /**
+             * Add a new file row
+             */
             $('#addFile').click(function() {
 
                 if(currentFiles < 3){
@@ -36,12 +40,34 @@
 
             });
 
+            /**
+             * Delete a file row
+             */
+            $('#fileTable').on('click', '.btn.btn-danger', function (e) {
+
+                $(this).closest('div').find('input').val('');
+
+                var rowCount = $('#fileTable tr').length;
+
+                if(rowCount > 1){
+                    $(this).parent().parent().parent().find('.file').val('');
+                    var tRow = $(this).closest('tr');
+                    tRow.remove();
+                    currentFiles--;
+                }
+            });
+
             $('#btnUpload').click(function (e) {
+
                 e.preventDefault();
+
                 $(this).prop('disabled', true);
+
                 $('#progressDiv').removeAttr('hidden');
+
                 var form = document.forms[0];
                 var formData = new FormData(form);
+
                 var ajaxRequest = $.ajax({
                     url: '/save',
                     type: 'POST',
@@ -99,10 +125,18 @@
         .table > tbody > tr {
             vertical-align: middle;
         }
+        .alert {
+            height: 10px;
+            line-height: 0px;
+        }
     </style>
     <h3>Déposer des fichiers</h3>
     <form class="form" method="post" th:action="@{/save}" th:object="${uploadForm}" enctype="multipart/form-data">
         <p>Sélectionnez plusieurs fichiers à transférer en cliquant sur le bouton 'ajouter un fichier' (max 3).</p>
+        <ul>
+            <li>Limite de 3 fichiers par transfert</li>
+            <li>Limite de 10 Mo maximum par fichier</li>
+        </ul>
         <hr>
         <button id="addFile" type="button" class="btn btn-warning">Ajouter un fichier</button>
         <br>
@@ -112,15 +146,25 @@
                 <tr>
                     <td>
                         <div class="form-group">
-                            <input type="file" name="files[0]" class="file">
+                            <input type="file" name="files[0]" class="file" accept="application/pdf, image/*">
                             <div class="input-group col-xs-12">
-                                <span class="input-group-addon"><i class="glyphicon glyphicon-file"></i></span>
-                                <input type="text" class="form-control input" readonly value="" placeholder="Upload file">
+                                <span class="input-group-addon">
+                                    <i class="glyphicon glyphicon-file"></i>
+                                </span>
+                                <input type="text" class="form-control input"
+                                       readonly value=""
+                                       placeholder="Sélectionner un fichier en cliquant sur le bouton 'parcourir' ci-contre">
                                 <span class="input-group-btn">
+                                    <button class="btn btn-danger" type="button">
+                                        <i class="glyphicon glyphicon-remove"></i>
+                                    </button>
                                     <button class="browse btn btn-primary input" type="button">
-                                    <i class="glyphicon glyphicon-search"></i> Browse</button>
+                                        <i class="glyphicon glyphicon-search"></i>
+                                        Parcourir
+                                    </button>
                                 </span>
                             </div>
+                            <p class="alert alert-success">Taille du fichier</p>
                         </div>
                     </td>
                 </tr>
