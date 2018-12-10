@@ -12,5 +12,5 @@ services:
     external_links:
     - LPDM-StorageDB
     ports:
-    - '28083:28083'
+    - '28089:28089'
     restart: always
