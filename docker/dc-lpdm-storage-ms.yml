@@ -5,7 +5,7 @@ services:
   storage-ms:
     container_name: LPDM-StorageMS
     volumes:
-      - './var/www/html/lpdm/storage/:/files'
+      - './var/www/html/lpdm/storage:/files'
     build:
       context: .
       dockerfile: Dockerfile
