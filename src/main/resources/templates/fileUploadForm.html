@@ -22,6 +22,7 @@
             // Constraint
             var maxFiles = 3;
             var currentFiles = 1;
+            var fileTable = $('#fileTable');
 
             /**
              * Add a new file row
@@ -31,19 +32,21 @@
                 if(currentFiles < 3){
 
                     currentFiles++;
+
                     var fileIndex = $('#fileTable tr').children().length;
                     $('#fileTable tbody tr:last-child').clone().appendTo($('#fileTable tbody'));
                     $('#fileTable tbody tr:last-child td div input').attr('name', 'files[' + fileIndex + ']');
                     $('#fileTable tbody tr:last-child td div input').val('');
+                    $('#fileTable tbody tr:last-child').hide().fadeIn(400);
                 }
-                else alert('Limite de 3 fichiers atteinte !')
+                else alert('Limite de 3 fichiers atteinte !');
 
             });
 
             /**
              * Delete a file row
              */
-            $('#fileTable').on('click', '.btn.btn-danger', function (e) {
+            fileTable.on('click', '.btn.btn-danger', function (e) {
 
                 $(this).closest('div').find('input').val('');
 
@@ -52,7 +55,8 @@
                 if(rowCount > 1){
                     $(this).parent().parent().parent().find('.file').val('');
                     var tRow = $(this).closest('tr');
-                    tRow.remove();
+                    //tRow.remove();
+                    tRow.fadeOut(400, function () { this.remove(); });
                     currentFiles--;
                 }
             });

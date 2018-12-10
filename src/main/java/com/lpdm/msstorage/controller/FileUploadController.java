@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Controller
 @RefreshScope
@@ -48,11 +49,15 @@ public class FileUploadController {
 
         if(files != null && files.size() > 0){
 
-            int nbFiles = files.size();
+            int nbFiles = 0;
 
             for(MultipartFile multipartFile : files){
 
-                if(multipartFile != null){
+                if(multipartFile != null &&
+                        !Objects.equals(multipartFile.getContentType(),
+                                "application/octet-stream")){
+
+                    nbFiles++;
 
                     String fileName = multipartFile.getOriginalFilename();
                     fileNames.add(fileName);
