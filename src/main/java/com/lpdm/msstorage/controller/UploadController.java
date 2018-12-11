@@ -1,9 +1,13 @@
 package com.lpdm.msstorage.controller;
 
+import com.lpdm.msstorage.dao.StorageRepository;
 import com.lpdm.msstorage.entity.FileUploadForm;
-import com.lpdm.msstorage.entity.FormDataWithFile;
+import com.lpdm.msstorage.entity.Storage;
+import com.lpdm.msstorage.entity.User;
+import com.lpdm.msstorage.exception.UserException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,39 +21,53 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Controller
 @RefreshScope
 @RequestMapping("/")
-public class FileUploadController {
+public class UploadController {
 
-    private final String FILE_PATH = "files/";
     private Logger log = LogManager.getLogger(this.getClass());
+    private final StorageRepository storageRepository;
 
+    @Autowired
+    public UploadController(StorageRepository storageRepository) {
+        this.storageRepository = storageRepository;
+    }
 
-    @GetMapping
+    @GetMapping("test")
     public String displayForm() {
         return "fileUploadForm";
     }
 
-    @PostMapping(produces = MediaType.TEXT_HTML_VALUE)
-    public String sendForm(){
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public String sendForm(@RequestBody User user, Model model){
 
-        return "fileUploadForm";
+        if(user.getId() != 0) {
+            model.addAttribute("user", user.getId());
+            return "fileUploadForm";
+        }
+        else throw new UserException();
     }
 
     @PostMapping(value = "/save")
-    public ResponseEntity<Object> save(@ModelAttribute("uploadForm")FileUploadForm uploadForm, Model model){
+    public ResponseEntity<Object> save(@ModelAttribute("uploadForm")FileUploadForm uploadForm){
 
+        log.info("USER ID = " + uploadForm.getUser());
         List<MultipartFile> files = uploadForm.getFiles();
         List<String> fileNames = new ArrayList<>();
 
+        /*
+        if (uploadForm.getUser().isEmpty() || uploadForm.getUser().equals("0"))
+            throw new UserException();
+        */
         if(files != null && files.size() > 0){
 
             int nbFiles = 0;
+            String folder = UUID.randomUUID().toString() + "/";
+
+            ArrayList<String> uploadedFiles = new ArrayList<>();
 
             for(MultipartFile multipartFile : files){
 
@@ -57,10 +75,13 @@ public class FileUploadController {
                         !Objects.equals(multipartFile.getContentType(),
                                 "application/octet-stream")){
 
-                    nbFiles++;
+                    //nbFiles++;
+
 
                     String fileName = multipartFile.getOriginalFilename();
                     fileNames.add(fileName);
+
+                    String url = folder + fileName;
 
                     log.info("File : " + fileName);
                     log.info("Size :" + multipartFile.getSize());
@@ -69,7 +90,7 @@ public class FileUploadController {
                     try {
                         BufferedOutputStream bos = new BufferedOutputStream(
                                 new FileOutputStream(
-                                        new File(FILE_PATH + fileName)
+                                        new File("files/" + fileName)
                                 )
                         );
 
@@ -77,15 +98,22 @@ public class FileUploadController {
                         bos.flush();
                         bos.close();
 
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                        Storage storage = new Storage(multipartFile.getContentType());
+                        storage.setOwner(Integer.parseInt(uploadForm.getUser()));
+                        storage.setUrl(url);
+
+                        storageRepository.save(storage);
+
+                        uploadedFiles.add(multipartFile.getOriginalFilename());
+
                     }
+                    catch (IOException e) { e.printStackTrace(); }
                 }
             }
 
             String response = null;
-            if(nbFiles > 1) response = nbFiles + " fichiers tranférés.";
-            else response = "1 fichier transféré.";
+            if(uploadedFiles.size() > 1) response = nbFiles + " fichiers tranférés : " + uploadedFiles.toString();
+            else response = "1 fichier transféré : " + uploadedFiles.toString();
             return new ResponseEntity<>(response,HttpStatus.OK);
         }
         else return new ResponseEntity<>("Aucun fichier sélectionné !", HttpStatus.BAD_REQUEST);

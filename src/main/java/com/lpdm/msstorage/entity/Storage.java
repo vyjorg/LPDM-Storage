@@ -12,9 +12,8 @@ public class Storage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @OneToOne
-    @JoinColumn(name = "type_id")
-    private Type type;
+    @NotNull
+    private String fileType;
 
     @NotNull
     private int owner;
@@ -25,6 +24,10 @@ public class Storage {
     public Storage() {
     }
 
+    public Storage(String fileType) {
+        this.fileType = fileType;
+    }
+
     public int getId() {
         return id;
     }
@@ -33,12 +36,12 @@ public class Storage {
         this.id = id;
     }
 
-    public Type getType() {
-        return type;
+    public String getFileType() {
+        return fileType;
     }
 
-    public void setType(Type type) {
-        this.type = type;
+    public void setFileType(String fileType) {
+        this.fileType = fileType;
     }
 
     public int getOwner() {
@@ -64,20 +67,20 @@ public class Storage {
         Storage storage = (Storage) o;
         return getId() == storage.getId() &&
                 getOwner() == storage.getOwner() &&
-                Objects.equals(getType(), storage.getType()) &&
+                Objects.equals(getFileType(), storage.getFileType()) &&
                 Objects.equals(getUrl(), storage.getUrl());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getType(), getOwner(), getUrl());
+        return Objects.hash(getId(), getFileType(), getOwner(), getUrl());
     }
 
     @Override
     public String toString() {
         return "Storage{" +
                 "id=" + id +
-                ", type=" + type +
+                ", fileType=" + fileType +
                 ", owner=" + owner +
                 ", url='" + url + '\'' +
                 '}';

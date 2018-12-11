@@ -15,7 +15,7 @@
 
 </head>
 <body>
-<div class="container">
+<div class="container" th:fragment="uploadForm">
     <script>
         $(document).ready(function() {
 
@@ -135,7 +135,9 @@
         }
     </style>
     <h3>Déposer des fichiers</h3>
-    <form class="form" method="post" th:action="@{/save}" th:object="${uploadForm}" enctype="multipart/form-data">
+    <form class="form" method="post" th:action="@{/save}" enctype="multipart/form-data">
+
+        <input fileType="text" id="user" name="user" th:value="${user}" hidden>
         <p>Sélectionnez plusieurs fichiers à transférer en cliquant sur le bouton 'ajouter un fichier' (max 3).</p>
         <ul>
             <li>Limite de 3 fichiers par transfert</li>
@@ -185,7 +187,7 @@
     </div>
 
     <!-- Alert -->
-    <div id="alertMsg" style="color: red;font-size: 18px;"></div>
+    <div id="alert alert-danger" style="color: red;font-size: 18px;"></div>
 </div>
 
 </body>

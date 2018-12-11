@@ -19,7 +19,7 @@ WORKDIR /app
 COPY --from=clone /app/LPDM-Storage /app
 # Build the project
 RUN mvn clean package
-# Create file folder
+# Create files folder
 RUN mdkir files
 
 CMD ["java", "-jar", "target/ms-storage-0.0.1-SNAPSHOT.jar"]

@@ -7,6 +7,7 @@ import java.util.List;
 public class FileUploadForm {
 
     private List<MultipartFile> files;
+    private String user;
 
     public FileUploadForm() {
     }
@@ -17,5 +18,13 @@ public class FileUploadForm {
 
     public void setFiles(List<MultipartFile> files) {
         this.files = files;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
     }
 }
