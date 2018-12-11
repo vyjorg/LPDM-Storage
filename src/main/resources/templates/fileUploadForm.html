@@ -19,17 +19,27 @@
     <script>
         $(document).ready(function() {
 
-            // Constraint
+            // Constraints
             var maxFiles = 3;
             var currentFiles = 1;
+
+            // Selectors
             var fileTable = $('#fileTable');
+            var divAlert = $('#alertMsg');
+            var progressBar = $('#progressBar');
+            var progressDiv = $('#progressDiv');
+            var btnAddFile = $('#addFile');
+
+            $('button[type=submit]').prop('disabled',true);
 
             /**
              * Add a new file row
              */
-            $('#addFile').click(function() {
+            btnAddFile.click(function() {
 
-                if(currentFiles < 3){
+                btnAddFile.prop('disabled', true);
+
+                if(currentFiles < maxFiles){
 
                     currentFiles++;
 
@@ -37,10 +47,16 @@
                     $('#fileTable tbody tr:last-child').clone().appendTo($('#fileTable tbody'));
                     $('#fileTable tbody tr:last-child td div input').attr('name', 'files[' + fileIndex + ']');
                     $('#fileTable tbody tr:last-child td div input').val('');
+                    $('#fileTable tbody tr:last-child td div p').attr('class', '').text('').hide();
                     $('#fileTable tbody tr:last-child').hide().fadeIn(400);
+
+                    if(currentFiles < maxFiles){
+                        setTimeout(function () {
+                            btnAddFile.prop('disabled', false);
+                        }, 400);
+                    }
                 }
                 else alert('Limite de 3 fichiers atteinte !');
-
             });
 
             /**
@@ -59,20 +75,33 @@
                     tRow.fadeOut(400, function () { this.remove(); });
                     currentFiles--;
                 }
+
+                btnAddFile.prop('disabled', false);
             });
 
+            /**
+             * Upload files
+             */
             $('#btnUpload').click(function (e) {
 
                 e.preventDefault();
 
+                // Disable buttons
                 $(this).prop('disabled', true);
+                //btnAddFile.prop('disabled', true);
+                $('button[type=submit]').prop('disabled',true);
+                $('button[type=button]').prop('disabled',true);
 
-                $('#progressDiv').removeAttr('hidden');
+
+                // Display progress bar
+                progressDiv.fadeIn(200);
+                progressBar.fadeIn(200);
 
                 var form = document.forms[0];
                 var formData = new FormData(form);
 
                 var ajaxRequest = $.ajax({
+                    //url: '/save',
                     url: 'http://lpdm.storage.kybox.fr/save',
                     type: 'POST',
                     data: formData,
@@ -84,23 +113,26 @@
 
                         xhr.upload.onprogress = function (ev) {
                             var perc = Math.round((ev.loaded / ev.total) * 100);
-                            $('#progressBar').text(perc + ' %');
-                            $('#progressBar').css('width', perc + '%');
+                            progressBar.text(perc + ' %');
+                            progressBar.css('width', perc + '%');
                         };
                         return xhr;
                     },
                     beforeSend: function (xhr) {
                         $('#alertMsg').text('');
-                        $('#progressBar').text('');
-                        $('#progressBar').css('width', '0%');
+                        progressBar.text('');
+                        progressBar.css('width', '0%');
                     }
                 });
 
                 // Called on success of file upload
                 ajaxRequest.done(function(msg) {
-                    $('#alertMsg').text(msg);
+                    divAlert.text(msg);
+                    divAlert.fadeIn(400);
                     $('input[type=file]').val('');
-                    $('button[type=submit]').prop('disabled',false);
+                    //$('button[type=submit]').prop('disabled',false);
+                    setTimeout(resetForm, 4000);
+
                 });
                 // Called on failure of file upload
                 ajaxRequest.fail(function(jqXHR) {
@@ -108,8 +140,35 @@
                         ' - '+jqXHR.statusText+')');
                     $('button[type=submit]').prop('disabled',false);
                 });
-            })
+            });
+
+            function resetForm() {
+
+                // Alert
+                divAlert.delay(600).fadeOut(400);
+
+                // Progress
+                progressBar.delay(1300).fadeOut(400).text('').css('width', '0%').show();
+                progressDiv.delay(600).fadeOut(400);
+
+                // Buttons
+                $('button[type=button]').prop('disabled',false);
+
+                // Fields
+                while($('#fileTable tr').children().length > 1){
+                    $('#fileTable tbody tr:last-child td div input').val('');
+                    $('#fileTable tbody tr:last-child').fadeOut(1000).delay(100).remove();
+                }
+                $('#fileTable tbody tr:last-child td div input').val('');
+                $('#fileTable tbody tr:last-child td div p').hide();
+
+                // Reset nb fields
+                currentFiles = 1;
+            }
         });
+        // --> End of document ready
+
+
         $(document).on('click', '.browse', function(){
             var file = $(this).parent().parent().parent().find('.file');
             file.trigger('click');
@@ -117,6 +176,31 @@
         $(document).on('change', '.file', function(){
             $(this).parent().find('.form-control').val($(this).val().replace(/C:\\fakepath\\/i, ''));
         });
+        /**
+         * Check file size
+         */
+        $(document).on('change', '.file', function () {
+            var input = $(this);
+            var label = input.next('div').find('input:text');
+            var file = $(this).get(0).files[0];
+            var fileSize = Math.round(file.size / 1024);
+            var divInfo = $(this).nextAll('p');
+            divInfo.text("Taille du fichier : " + fileSize + " Ko");
+            if(fileSize > 10000) {
+                divInfo.attr('class', 'alert alert-danger');
+                divInfo.fadeIn(400).delay(2000).fadeOut(200, function () {
+                    input.val('');
+                    label.val('');
+                });
+            }
+            else {
+                divInfo.attr('class', 'alert alert-info');
+                divInfo.fadeIn(400);
+                $('button[type=submit]').prop('disabled',false);
+            }
+        });
+
+
     </script>
     <style>
         .file {
@@ -129,7 +213,7 @@
         .table > tbody > tr {
             vertical-align: middle;
         }
-        .alert {
+        .alert, .alert > span {
             height: 10px;
             line-height: 0px;
         }
@@ -170,7 +254,7 @@
                                     </button>
                                 </span>
                             </div>
-                            <p class="alert alert-success">Taille du fichier</p>
+                            <p hidden></p>
                         </div>
                     </td>
                 </tr>
@@ -187,7 +271,8 @@
     </div>
 
     <!-- Alert -->
-    <div id="alert alert-danger" style="color: red;font-size: 18px;"></div>
+    <div id="alertMsg" class="alert alert-info" hidden>
+    </div>
 </div>
 
 </body>

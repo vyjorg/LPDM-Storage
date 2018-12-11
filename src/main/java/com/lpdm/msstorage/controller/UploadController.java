@@ -66,23 +66,24 @@ public class UploadController {
         if(files != null && files.size() > 0){
 
             int nbFiles = 0;
-            String folder = UUID.randomUUID().toString() + "/";
+
+            String userFolder = UUID.randomUUID().toString();
+
+            new File("files/" + userFolder).mkdir();
+
+            String folder = "files/" + userFolder + "/";
 
             ArrayList<String> uploadedFiles = new ArrayList<>();
 
             for(MultipartFile multipartFile : files){
 
-                if(multipartFile != null &&
-                        !Objects.equals(multipartFile.getContentType(),
-                                "application/octet-stream")){
-
-                    //nbFiles++;
-
+                if(multipartFile != null && !Objects
+                        .equals(multipartFile.getContentType(), "application/octet-stream")){
 
                     String fileName = multipartFile.getOriginalFilename();
                     fileNames.add(fileName);
 
-                    String url = folder + fileName;
+                    String url = userFolder + "/" + fileName;
 
                     log.info("File : " + fileName);
                     log.info("Size :" + multipartFile.getSize());
@@ -91,7 +92,7 @@ public class UploadController {
                     try {
                         BufferedOutputStream bos = new BufferedOutputStream(
                                 new FileOutputStream(
-                                        new File("files/" + fileName)
+                                        new File(folder + fileName)
                                 )
                         );
 
@@ -101,7 +102,7 @@ public class UploadController {
 
                         Storage storage = new Storage(multipartFile.getContentType());
                         storage.setOwner(Integer.parseInt(uploadForm.getUser()));
-                        storage.setUrl(url);
+                        storage.setUrl("http://lpdm.files.kybox.fr/" + url);
 
                         storageRepository.save(storage);
 
@@ -113,8 +114,8 @@ public class UploadController {
             }
 
             String response = null;
-            if(uploadedFiles.size() > 1) response = nbFiles + " fichiers tranférés : " + uploadedFiles.toString();
-            else response = "1 fichier transféré : " + uploadedFiles.toString();
+            if(uploadedFiles.size() > 1) response = uploadedFiles.size() + " fichiers tranférés.";
+            else response = uploadedFiles.size() + " fichier transféré.";
             return new ResponseEntity<>(response,HttpStatus.OK);
         }
         else return new ResponseEntity<>("Aucun fichier sélectionné !", HttpStatus.BAD_REQUEST);
