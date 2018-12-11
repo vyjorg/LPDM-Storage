@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class NoFileAdvice {
 
     @ResponseBody
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @ExceptionHandler(FileNotFoundException.class)
     String fileNotFoundHandler(FileNotFoundException e){
         return e.getMessage();

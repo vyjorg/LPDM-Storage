@@ -73,7 +73,7 @@
                 var formData = new FormData(form);
 
                 var ajaxRequest = $.ajax({
-                    url: '/save',
+                    url: 'http://lpdm.storage.kybox.fr/save',
                     type: 'POST',
                     data: formData,
                     cache: false,
@@ -135,7 +135,7 @@
         }
     </style>
     <h3>Déposer des fichiers</h3>
-    <form class="form" method="post" th:action="@{/save}" enctype="multipart/form-data">
+    <form class="form" method="post" enctype="multipart/form-data">
 
         <input fileType="text" id="user" name="user" th:value="${user}" hidden>
         <p>Sélectionnez plusieurs fichiers à transférer en cliquant sur le bouton 'ajouter un fichier' (max 3).</p>
