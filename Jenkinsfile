@@ -24,6 +24,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
+                step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker/dc-lpdm-storage-ms.yml', option: [$class: 'StopAllServices'], useCustomDockerComposeFile: true])
                 step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker/dc-lpdm-storage-ms.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
             }
         }
