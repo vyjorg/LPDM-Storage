@@ -24,7 +24,9 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker/dc-lpdm-storage-ms.yml', option: [$class: 'StopAllServices'], useCustomDockerComposeFile: true])
+                'sh docker stop LPDM-StorageMS'
+                'sh docker rm LPDM-StorageMS'
+                'sh docker-compose -f /var/lib/jenkins/workspace/LPDM_LPDM-Storage_master/docker/dc-lpdm-storage-ms.yml build'
                 step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker/dc-lpdm-storage-ms.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
             }
         }
