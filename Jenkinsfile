@@ -31,7 +31,7 @@ pipeline {
             steps {
                 sh 'docker stop LPDM-StorageMS || true && docker rm LPDM-StorageMS || true'
                 sh 'docker pull vyjorg/lpdm-storage:latest'
-                sh 'docker run -d --name LPDM-OrderMS -p 28083:28083 --link LPDM-StorageDB --restart always --memory-swappiness=0  vyjorg/lpdm-storage:latest'
+                sh 'docker run -d --name LPDM-StorageMS -p 28089:28089 --link LPDM-StorageDB --restart always --memory-swappiness=0  vyjorg/lpdm-storage:latest'
             }
         }
     }
