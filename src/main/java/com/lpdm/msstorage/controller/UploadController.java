@@ -102,7 +102,7 @@ public class UploadController {
 
                         Storage storage = new Storage(multipartFile.getContentType());
                         storage.setOwner(Integer.parseInt(uploadForm.getUser()));
-                        storage.setUrl("http://lpdm.files.kybox.fr/" + url);
+                        storage.setUrl("https://files.lpdm.kybox.fr/" + url);
 
                         storageRepository.save(storage);
 

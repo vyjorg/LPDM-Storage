@@ -3,15 +3,19 @@ services:
 
   # POSTGRESQL CONTAINER
   storage-db:
-    image: postgres:alpine
+    image: postgres:11-alpine
     ports:
-    - '28189:5432'
+      - '28189:5432'
     container_name: LPDM-StorageDB
     environment:
       POSTGRES_DB: lpdm-storage
       POSTGRES_USER: lpdm
       POSTGRES_PASSWORD: lpdm
     volumes:
-    - './db/sql:/docker-entrypoint-initdb.d'
+      - data:/var/lib/postgresql/data
     restart: always
     network_mode: bridge
+
+# DATA VOLUME
+volumes:
+  data: {}
