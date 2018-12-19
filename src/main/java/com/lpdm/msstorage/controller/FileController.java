@@ -37,15 +37,19 @@ public class FileController {
         return ResponseEntity.ok().body(storageList);
     }
 
-    @GetMapping("/{userId}/delete/{fileUrl}")
-    public ResponseEntity<List<Storage>> deleteFile(@PathVariable(name = "userId") int userId,
-                                                    @PathVariable(name = "fileUrl") String fileUrl){
-        Optional<Storage> file = storageRepository.findByOwnerAndUrl(userId, fileUrl);
-        if(!file.isPresent()) throw new FileNotFoundException();
+    @GetMapping("/{id}/delete/{folder}/{file}")
+    public ResponseEntity<List<Storage>> deleteFile(@PathVariable(name = "id") int id,
+                                                    @PathVariable(name = "folder") String folder,
+                                                    @PathVariable(name = "file") String file){
 
-        storageRepository.delete(file.get());
+        String url = "https://files.lpdm.kybox.fr/" + folder + "/" + file;
+        log.info("File to delete : " + url);
+        Optional<Storage> storage = storageRepository.findByOwnerAndUrl(id, url);
+        if(!storage.isPresent()) throw new FileNotFoundException();
 
-        List<Storage> storageList = storageRepository.findAllByOwner(userId);
+        storageRepository.delete(storage.get());
+
+        List<Storage> storageList = storageRepository.findAllByOwner(id);
         return ResponseEntity.ok(storageList);
     }
 }
