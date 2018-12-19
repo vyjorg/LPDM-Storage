@@ -11,7 +11,7 @@ pipeline {
         }
         stage('Tests') {
             steps {
-                sh 'mvn clean test'
+                sh 'mvn test'
             }
             post {
                 always {
@@ -22,16 +22,11 @@ pipeline {
                 }
             }
         }
-        stage('Push to DockerHub') {
-            steps {
-                sh 'mvn clean package'
-            }
-        }
         stage('Deploy') {
             steps {
                 sh 'docker stop LPDM-StorageMS || true && docker rm LPDM-StorageMS || true'
-                sh 'docker pull vyjorg/lpdm-storage:latest'
-                sh 'docker run -d --name LPDM-OrderMS -p 28083:28083 --link LPDM-StorageDB --restart always --memory-swappiness=0  vyjorg/lpdm-storage:latest'
+                sh 'docker-compose -f /var/lib/jenkins/workspace/LPDM_LPDM-Storage_master/docker/dc-lpdm-storage-ms.yml build --no-cache'
+                step([$class: 'DockerComposeBuilder', dockerComposeFile: 'docker/dc-lpdm-storage-ms.yml', option: [$class: 'StartAllServices'], useCustomDockerComposeFile: true])
             }
         }
     }
