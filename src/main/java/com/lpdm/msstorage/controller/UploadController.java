@@ -52,7 +52,7 @@ public class UploadController {
     }
 
     @CrossOrigin
-    @PostMapping(value = "/save")
+    @PostMapping(value = "save")
     public ResponseEntity<Object> save(@ModelAttribute("uploadForm")FileUploadForm uploadForm){
 
         log.info("USER ID = " + uploadForm.getUser());
@@ -60,7 +60,7 @@ public class UploadController {
         List<String> fileNames = new ArrayList<>();
 
 
-        if (uploadForm.getUser().isEmpty() || uploadForm.getUser().equals("0"))
+        if (uploadForm.getUser().isEmpty() || uploadForm.getUser().equals("0") || uploadForm.getUser().equals("null"))
             throw new UserException();
 
         if(files != null && files.size() > 0){

@@ -6,7 +6,7 @@ import com.lpdm.msstorage.exception.FileNotFoundException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Optional;
 
-@RefreshScope
 @RequestMapping("/user")
 @RestController
 public class FileController {
@@ -37,7 +36,7 @@ public class FileController {
         return ResponseEntity.ok().body(storageList);
     }
 
-    @GetMapping("/{id}/delete/{folder}/{file}")
+    @GetMapping(value = "/{id}/delete/{folder}/{file}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<List<Storage>> deleteFile(@PathVariable(name = "id") int id,
                                                     @PathVariable(name = "folder") String folder,
                                                     @PathVariable(name = "file") String file){
