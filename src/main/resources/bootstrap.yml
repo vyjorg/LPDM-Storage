@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: ms-storage
+  cloud:
+    config:
+      allow-override: true
+      uri: https://config.lpdm.kybox.fr
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  main:
+    allow-bean-definition-overriding: true
+  thymeleaf:
+    cache: false
