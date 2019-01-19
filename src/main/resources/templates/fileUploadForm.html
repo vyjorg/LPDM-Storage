@@ -17,6 +17,7 @@
 <body>
 <div id="content" th:fragment="uploadForm">
     <script>
+        var ajaxRequest;
         $(document).ready(function() {
 
             // Constraints
@@ -101,7 +102,7 @@
                 var formData = new FormData(form);
                 console.log(formData);
 
-                var ajaxRequest = $.ajax({
+                ajaxRequest = $.ajax({
                     //url: '/save',
                     url: 'https://storage.lpdm.kybox.fr/save',
                     type: 'POST',
