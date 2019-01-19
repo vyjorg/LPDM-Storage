@@ -97,7 +97,7 @@
                 progressDiv.fadeIn(200);
                 progressBar.fadeIn(200);
 
-                var form = $("#formUploadFile);
+                var form = $("#formUploadFile");
                 var formData = new FormData(form);
                 console.log(formData);
 
@@ -216,14 +216,14 @@
         }
         #alertMsg, #alertMsg > span {
             height: 10px;
-            line-height: 0px;
+            line-height: 0;
         }
         
     </style>
     <h3>Déposer des fichiers</h3>
     <form class="form" method="post" enctype="multipart/form-data" id="formUploadFile">
 
-        <input fileType="text" id="user" name="user" th:value="${user}" hidden>
+        <input type="text" id="user" name="user" th:value="${user}" hidden>
         <p>Sélectionnez plusieurs fichiers à transférer en cliquant sur le bouton 'ajouter un fichier' (max 3).</p>
         <ul>
             <li>Limite de 3 fichiers par transfert</li>
