@@ -10,4 +10,5 @@ public interface StorageRepository extends JpaRepository<Storage, Integer> {
 
     List<Storage> findAllByOwner(int owner);
     Optional<Storage> findByOwnerAndUrl(int owner, String url);
+    Optional<Storage> findFirstByOwnerOrderByIdDesc(int owner);
 }

@@ -3,6 +3,7 @@ package com.lpdm.msstorage.controller;
 import com.lpdm.msstorage.dao.StorageRepository;
 import com.lpdm.msstorage.entity.Storage;
 import com.lpdm.msstorage.exception.FileNotFoundException;
+import com.lpdm.msstorage.exception.UserException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +29,21 @@ public class FileController {
         this.storageRepository = storageRepository;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = {"/{id}", "/{id}/"})
     public ResponseEntity<List<Storage>> getFilesByOwner(@PathVariable int id){
 
         List<Storage> storageList = storageRepository.findAllByOwner(id);
         if (storageList.isEmpty()) throw new FileNotFoundException();
         return ResponseEntity.ok().body(storageList);
+    }
+
+    @GetMapping(value = {"/{id}/latest", "/{id}/latest/"})
+    public Storage getLastFileByOwner(@PathVariable int id){
+
+        if(id == 0) throw new UserException();
+        Optional<Storage> optStorage = storageRepository.findFirstByOwnerOrderByIdDesc(id);
+        if(!optStorage.isPresent()) throw new UserException();
+        return optStorage.get();
     }
 
     @GetMapping(value = "/{id}/delete/{folder}/{file}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
