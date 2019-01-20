@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -42,13 +43,14 @@ public class UploadController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public String sendForm(@RequestBody User user, Model model){
+    public ModelAndView sendForm(@RequestBody User user, Model model){
 
-        if(user.getId() != 0) {
-            model.addAttribute("user", user.getId());
-            return "fileUploadForm";
-        }
-        else throw new UserException();
+        if(user.getId() == 0)throw new UserException();
+        model.addAttribute("user", user.getId());
+
+        return new ModelAndView("fileUploadForm")
+                .addObject("user", user.getId())
+                .addObject("restricted", user.isRestricted());
     }
 
     @CrossOrigin

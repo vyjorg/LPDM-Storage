@@ -3,6 +3,7 @@ package com.lpdm.msstorage.entity;
 public class User {
 
     private int id;
+    private boolean restricted;
 
     public User() {
     }
@@ -17,5 +18,13 @@ public class User {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public boolean isRestricted() {
+        return restricted;
+    }
+
+    public void setRestricted(boolean restrict) {
+        this.restricted = restrict;
     }
 }

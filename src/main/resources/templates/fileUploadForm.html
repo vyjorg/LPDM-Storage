@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>File Upload Example</title>
@@ -226,14 +225,16 @@
     <h3>Déposer des fichiers</h3>
     <form class="form" method="post" enctype="multipart/form-data" id="formUploadFile">
 
-        <input type="text" id="user" name="user" th:value="${user}" hidden>
-        <p>Sélectionnez plusieurs fichiers à transférer en cliquant sur le bouton 'ajouter un fichier' (max 3).</p>
-        <ul>
-            <li>Limite de 3 fichiers par transfert</li>
-            <li>Limite de 10 Mo maximum par fichier</li>
-        </ul>
-        <hr>
-        <button id="addFile" type="button" class="btn btn-warning">Ajouter un fichier</button>
+        <input type="text" id="user" name="user" data-th-value="${user}" hidden>
+        <div data-th-if="${!user.isRestricted()}">
+            <p>Sélectionnez plusieurs fichiers à transférer en cliquant sur le bouton 'ajouter un fichier' (max 3).</p>
+            <ul>
+                <li>Limite de 3 fichiers par transfert</li>
+                <li>Limite de 10 Mo maximum par fichier</li>
+            </ul>
+            <hr>
+            <button id="addFile" type="button" class="btn btn-warning">Ajouter un fichier</button>
+        </div>
         <br>
         <br>
         <table class="table borderless table-condensed" id="fileTable">
