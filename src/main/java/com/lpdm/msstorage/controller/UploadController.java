@@ -5,6 +5,7 @@ import com.lpdm.msstorage.entity.FileUploadForm;
 import com.lpdm.msstorage.entity.Storage;
 import com.lpdm.msstorage.entity.User;
 import com.lpdm.msstorage.exception.UserException;
+import com.lpdm.msstorage.utils.FileExtension;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +83,10 @@ public class UploadController {
                 if(multipartFile != null && !Objects
                         .equals(multipartFile.getContentType(), "application/octet-stream")){
 
-                    String fileName = multipartFile.getOriginalFilename();
+                    //String fileName = multipartFile.getOriginalFilename();
+                    String ext = FileExtension.get(multipartFile.getOriginalFilename()).get();
+                    String fileName = UUID.randomUUID().toString() + ext;
+
                     fileNames.add(fileName);
 
                     String url = userFolder + "/" + fileName;
