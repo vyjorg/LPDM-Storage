@@ -226,7 +226,7 @@
     <form class="form" method="post" enctype="multipart/form-data" id="formUploadFile">
 
         <input type="text" id="user" name="user" data-th-value="${user}" hidden>
-        <div data-th-if="${!user.isRestricted()}">
+        <div data-th-if="${!restricted}">
             <p>Sélectionnez plusieurs fichiers à transférer en cliquant sur le bouton 'ajouter un fichier' (max 3).</p>
             <ul>
                 <li>Limite de 3 fichiers par transfert</li>
