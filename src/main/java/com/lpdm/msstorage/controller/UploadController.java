@@ -6,8 +6,8 @@ import com.lpdm.msstorage.entity.Storage;
 import com.lpdm.msstorage.entity.User;
 import com.lpdm.msstorage.exception.UserException;
 import com.lpdm.msstorage.utils.FileExtension;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.HttpStatus;
@@ -23,21 +23,36 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+
+/**
+ * @author Kybox
+ * @version 1.0
+ * @since 01/12/2018
+ */
 
 @Controller
 @RefreshScope
 @RequestMapping("/")
+@Api(tags = {"Upload Rest API"})
 public class UploadController {
 
-    private Logger log = LogManager.getLogger(this.getClass());
     private final StorageRepository storageRepository;
 
     @Autowired
     public UploadController(StorageRepository storageRepository) {
+
         this.storageRepository = storageRepository;
     }
 
+    /**
+     * Test path to display the upload form
+     * @return The html page with the upload form
+     */
+    @ApiOperation(value = "Test path to display the upload form")
     @GetMapping("test")
     public String displayForm() {
         return "fileUploadForm";
@@ -54,14 +69,18 @@ public class UploadController {
                 .addObject("restricted", user.isRestricted());
     }
 
+    /**
+     * Save file(s) from the {@link FileUploadForm}
+     * @param uploadForm The {@link FileUploadForm} with the data
+     * @return The response of the upload process
+     */
     @CrossOrigin
+    @ApiOperation(value = "Save file(s) form the upload form")
     @PostMapping(value = "save")
     public ResponseEntity<Object> save(@ModelAttribute("uploadForm")FileUploadForm uploadForm){
 
-        log.info("USER ID = " + uploadForm.getUser());
         List<MultipartFile> files = uploadForm.getFiles();
         List<String> fileNames = new ArrayList<>();
-
 
         if (uploadForm.getUser().isEmpty() || uploadForm.getUser().equals("0") || uploadForm.getUser().equals("null"))
             throw new UserException();
@@ -90,10 +109,6 @@ public class UploadController {
                     fileNames.add(fileName);
 
                     String url = userFolder + "/" + fileName;
-
-                    log.info("File : " + fileName);
-                    log.info("Size :" + multipartFile.getSize());
-                    log.info("ContentType :" + multipartFile.getContentType());
 
                     try {
                         BufferedOutputStream bos = new BufferedOutputStream(

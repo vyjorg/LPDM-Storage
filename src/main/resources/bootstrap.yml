@@ -12,3 +12,10 @@ spring:
     allow-bean-definition-overriding: true
   thymeleaf:
     cache: false
+
+# ACTUATOR
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
